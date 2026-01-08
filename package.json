@@ -1,0 +1,10 @@
+{
+  "name": "challenges",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:api": "pnpm -C api dev",
+    "dev:web": "pnpm -C web dev",
+    "test": "pnpm -C api test"
+  }
+}

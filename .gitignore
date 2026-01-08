@@ -1,0 +1,22 @@
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+.next/
+out/
+coverage/
+
+# Environment files
+.env
+.env.*
+
+# Logs and runtime artifacts
+npm-debug.log*
+pnpm-debug.log*
+*.log
+
+# Editor/system files
+.DS_Store
+Thumbs.db
+.idea/
