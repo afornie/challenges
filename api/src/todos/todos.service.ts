@@ -1,34 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-
-export interface Todo {
-  id: number;
-  title: string;
-  description?: string;
-  completed: boolean;
-}
-
-export interface CreateTodoDto {
-  title: string;
-  description?: string;
-}
-
-export interface UpdateTodoDto {
-  title?: string;
-  description?: string;
-  completed?: boolean;
-}
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import type { CreateTodoDto } from './dto/create-todo.dto';
+import type { UpdateTodoDto } from './dto/update-todo.dto';
+import {
+  TODOS_REPOSITORY,
+  type Todo,
+  type TodosRepository,
+} from './todos.repository';
 
 @Injectable()
 export class TodosService {
-  private todos: Todo[] = [];
-  private idCounter = 1;
+  constructor(
+    @Inject(TODOS_REPOSITORY)
+    private readonly todosRepository: TodosRepository,
+  ) {}
 
   findAll(): Todo[] {
-    return this.todos;
+    return this.todosRepository.findAll();
   }
 
   findOne(id: number): Todo {
-    const todo = this.todos.find((item) => item.id === id);
+    const todo = this.todosRepository.findOne(id);
     if (!todo) {
       throw new NotFoundException(`Todo ${id} not found`);
     }
@@ -36,35 +27,22 @@ export class TodosService {
   }
 
   create(payload: CreateTodoDto): Todo {
-    const todo: Todo = {
-      id: this.idCounter++,
+    return this.todosRepository.create({
       title: payload.title,
       description: payload.description,
-      completed: false,
-    };
-    this.todos.push(todo);
-    return todo;
+    });
   }
 
   update(id: number, payload: UpdateTodoDto): Todo {
-    const todo = this.findOne(id);
-    if (payload.title !== undefined) {
-      todo.title = payload.title;
-    }
-    if (payload.description !== undefined) {
-      todo.description = payload.description;
-    }
-    if (payload.completed !== undefined) {
-      todo.completed = payload.completed;
-    }
-    return todo;
+    this.findOne(id);
+    return this.todosRepository.update(id, payload);
   }
 
   remove(id: number): void {
-    const index = this.todos.findIndex((item) => item.id === id);
-    if (index === -1) {
+    const todo = this.todosRepository.findOne(id);
+    if (!todo) {
       throw new NotFoundException(`Todo ${id} not found`);
     }
-    this.todos.splice(index, 1);
+    this.todosRepository.remove(id);
   }
 }
