@@ -1,35 +1,36 @@
 package lru;
 
-import java.time.Instant;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LRU<K, V> {
-    // Make an inner class that holds the timestamp and the value of type T
-    class Track {
-        Instant time;
-        K key;
-    }
 
-    protected int capacity;
-    protected List<Track> list;
-    protected Map<K, V> contentsMap;
-    protected Map<K, Track> tracksMap;
+  private final int capacity;
+  private final Map<K, V> cache;
 
-    public LRU(int capacity) {
-        this.capacity = capacity;
-        list = new java.util.ArrayList<>();
+  public LRU(int capacity) {
+    if (capacity <= 0) {
+      throw new IllegalArgumentException("Capacity must be greater than zero");
     }
+    this.capacity = capacity;
+    this.cache =
+        new LinkedHashMap<>(capacity, 0.75f, true) {
+          @Override
+          protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > LRU.this.capacity;
+          }
+        };
+  }
 
-    public V get(K key) {
-        sort();
-        return contentsMap.get(key);
-    }
+  public V get(K key) {
+    return cache.get(key);
+  }
 
-    public void put(K key, V value) {
-        contentsMap.put(key, value);
-    }
-    protected void sort() {
-        
-    }
+  public void put(K key, V value) {
+    cache.put(key, value);
+  }
+
+  public int size() {
+    return cache.size();
+  }
 }
