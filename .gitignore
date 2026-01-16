@@ -6,6 +6,8 @@ dist/
 .next/
 out/
 coverage/
+**/target/
+**/*.class
 
 # Environment files
 .env
